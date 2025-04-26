@@ -1,27 +1,38 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
-const RED_LINE_STATIONS = [
-  { name: 'Harvard', lat: 42.3732, lon: -71.1189 },
-  { name: 'Central', lat: 42.3655, lon: -71.1038 },
-  { name: 'Kendall', lat: 42.3620, lon: -71.0860 },
-  { name: 'Porter', lat: 42.3884, lon: -71.1191 }
-];
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const cheerio = require('cheerio'); // We need this to scrape HTML
 
 exports.handler = async function () {
-  const fakeListing = {
-    title: "1BR on Mass Ave",
-    price: "$2700",
-    lat: 42.3730,
-    lon: -71.1100,
-    url: "https://example.com/listing/123"
-  };
+  try {
+    const url = 'https://boston.craigslist.org/search/apa?query=Cambridge&bedrooms=1&availabilityMode=0&max_price=2800';
+    const res = await fetch(url);
+    const html = await res.text();
+    const $ = cheerio.load(html);
 
-  const distanceToHarvard = 12;
+    const listings = [];
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify([
-      { ...fakeListing, distance: distanceToHarvard }
-    ])
-  };
+    $('.result-info').each((i, elem) => {
+      const title = $(elem).find('.result-title').text();
+      const url = $(elem).find('.result-title').attr('href');
+      const price = $(elem).find('.result-price').first().text();
+      const location = $(elem).find('.result-hood').text().trim();
+
+      listings.push({
+        title,
+        price,
+        url,
+        location,
+      });
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(listings),
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Failed to fetch listings' }),
+    };
+  }
 };
