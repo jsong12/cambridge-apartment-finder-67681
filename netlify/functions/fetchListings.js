@@ -14,17 +14,16 @@ exports.handler = async function () {
 
     const listings = [];
 
-    $('.result-info').each((i, elem) => {
-      const title = $(elem).find('.result-title').text();
-      const url = $(elem).find('.result-title').attr('href');
-      const price = $(elem).find('.result-price').first().text();
-      const location = $(elem).find('.result-hood').text().trim();
+    $('li.cl-search-result').each((i, elem) => {
+      const anchor = $(elem).find('a.cl-app-anchor');
+      const title = anchor.find('.title').text();
+      const price = anchor.find('.price').text();
+      const url = anchor.attr('href');
 
       listings.push({
         title,
         price,
         url,
-        location,
       });
     });
 
