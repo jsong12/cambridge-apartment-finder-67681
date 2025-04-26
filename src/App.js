@@ -10,18 +10,24 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
       <h1>Cambridge 1BR Apartments Near Red Line</h1>
-      <ul>
-        {apartments.map((apt, idx) => (
-          <li key={idx}>
-            <a href={apt.url} target="_blank" rel="noopener noreferrer">
-              {apt.title}
-            </a><br />
-            {apt.price} – {apt.distance} mins walk to Red Line
-          </li>
-        ))}
-      </ul>
+      {apartments.length === 0 ? (
+        <p>Loading apartments...</p>
+      ) : (
+        <div style={{ display: 'grid', gap: '1rem' }}>
+          {apartments.map((apt, idx) => (
+            <div key={idx} style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px' }}>
+              <h2 style={{ margin: '0 0 0.5rem' }}>
+                <a href={apt.url} target="_blank" rel="noopener noreferrer" style={{ color: '#007bff', textDecoration: 'none' }}>
+                  {apt.title}
+                </a>
+              </h2>
+              <p style={{ margin: '0.5rem 0', fontWeight: 'bold' }}>{apt.price}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
