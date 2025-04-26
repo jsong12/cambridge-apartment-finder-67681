@@ -20,10 +20,22 @@ exports.handler = async function () {
       const price = anchor.find('.price').text().trim();
       const url = anchor.attr('href');
 
+      const dataIds = $(elem).attr('data-ids');
+      let image = null;
+
+      if (dataIds) {
+        const firstId = dataIds.split(',')[0];
+        if (firstId) {
+          const cleanId = firstId.split(':')[1]; // Remove the "1:" prefix
+          image = `https://images.craigslist.org/${cleanId}_300x300.jpg`;
+        }
+      }
+
       listings.push({
         title,
         price,
         url,
+        image, // 👈 Include image URL!
       });
     });
 
