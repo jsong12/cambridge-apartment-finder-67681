@@ -10,18 +10,14 @@ exports.handler = async function () {
       }
     });
     const html = await res.text();
-
-    console.log(html); // 👈 Add this line to log the full Craigslist HTML
-
     const $ = cheerio.load(html);
 
     const listings = [];
 
-    // We were originally trying 'li.cl-search-result' but we'll verify based on the real HTML printed
-    $('li.cl-search-result').each((i, elem) => {
-      const anchor = $(elem).find('a.cl-app-anchor');
-      const title = anchor.find('.title').text();
-      const price = anchor.find('.price').text();
+    $('li.cl-static-search-result').each((i, elem) => {
+      const anchor = $(elem).find('a');
+      const title = anchor.find('.title').text().trim();
+      const price = anchor.find('.price').text().trim();
       const url = anchor.attr('href');
 
       listings.push({
